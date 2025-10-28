@@ -7,53 +7,40 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 
-
 @Service
 public class GeminiAiService {
 
     private final Client client;
-    private final LinkedList<String> conversationHistory; // store recent chats
-    private static final int MAX_HISTORY = 10; // 5 user + 5 AI = 10 entries
+    private final LinkedList<String> conversationHistory;
+    private static final int MAX_HISTORY = 10;
 
     public GeminiAiService() {
         this.client = new Client();
         this.conversationHistory = new LinkedList<>();
     }
 
-    /**
-     * Sends a message to ZENO and preserves only the last 5 exchanges.
-     * Supports code execution prompts as well.
-     */
-    public String generateText(String userMessage) {
+    public String generateText(String userMessage, String modelName) {
         try {
-            // Add user message
             conversationHistory.add("User: " + userMessage);
-
-            // Keep only the last MAX_HISTORY entries
             while (conversationHistory.size() > MAX_HISTORY) {
                 conversationHistory.removeFirst();
             }
 
-            // Build prompt with ZENO system instruction + recent history
             StringBuilder fullPrompt = new StringBuilder(Prompts.ZENO_PROMPT + "\n\n");
             for (String msg : conversationHistory) {
                 fullPrompt.append(msg).append("\n");
             }
-            fullPrompt.append("AI:"); // signal model to respond
+            fullPrompt.append("AI:");
 
-            // Generate response
             GenerateContentResponse response = client.models.generateContent(
-                    "gemini-2.0-flash",
+                    modelName,
                     fullPrompt.toString(),
                     null
             );
 
             String aiText = response.text();
-
-            // Add AI response to conversation history
             conversationHistory.add("AI: " + aiText);
 
-            // Maintain MAX_HISTORY
             while (conversationHistory.size() > MAX_HISTORY) {
                 conversationHistory.removeFirst();
             }

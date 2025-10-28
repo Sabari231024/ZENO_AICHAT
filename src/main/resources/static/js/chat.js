@@ -1,10 +1,12 @@
-marked.setOptions({ breaks:true, gfm:true });
+marked.setOptions({ breaks: true, gfm: true });
 
 let isFirstMessage = true;
 
 async function sendMessage() {
     const input = document.getElementById('user-input');
     const message = input.value.trim();
+    const model = document.getElementById('model-select').value;
+
     if (!message) return;
 
     const sendBtn = document.getElementById('send-btn');
@@ -24,7 +26,7 @@ async function sendMessage() {
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ prompt: message, model })
         });
 
         const text = await response.text();
@@ -47,7 +49,7 @@ function appendMessage(sender, message) {
 
     const content = document.createElement('div');
     content.classList.add('message-content');
-    
+
     if (sender === 'bot') {
         content.innerHTML = marked.parse(message);
     } else {
@@ -66,6 +68,10 @@ function handleKeyPress(event) {
         sendMessage();
     }
 }
+
+document.getElementById('send-btn').addEventListener('click', sendMessage);
+
+document.getElementById('user-input').addEventListener('keydown', handleKeyPress);
 
 document.getElementById('user-input').addEventListener('input', function() {
     this.style.height = 'auto';
