@@ -2,7 +2,7 @@
 
 A small Spring Boot web application that provides a chat UI backed by a Gemini-based AI service.
 
-This README explains how to build, run, configure, and extend the project. It also documents the repository layout and common troubleshooting steps.
+This README explains how to build, run, configure, and extend the project. It also documents the repository layout and common troubleshooting steps. . this application is deployed in AZURE . i has an CICD pipeline in the Backend
 
 ## Key features
 
